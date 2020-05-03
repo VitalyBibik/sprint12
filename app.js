@@ -12,7 +12,7 @@ app.use('/', userRoutes);
 app.use('/', cardRoutes);
 
 
-app.get('*', (req, res) => {
+app.all('*', (req, res) => {
   res.status(404).json({ message: 'Запрашиваемый ресурс не найден' });
 });
 
