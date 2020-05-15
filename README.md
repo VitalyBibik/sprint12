@@ -1,4 +1,4 @@
-# sprint12
+# sprint-backend
 ## Стек технологий: Node.js, express.js
 ## Цель: Создание 3 роутов: 
 ### GET localhost:3000/users	JSON-список всех пользователей
