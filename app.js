@@ -1,5 +1,5 @@
 const express = require('express');
-// СДелать карточки доп задания и разобраться с ошибкой при создании юзера
+const bodyParser = require('body-parser');
 const { PORT = 3000 } = process.env;
 const app = express();
 const mongoose = require('mongoose');
@@ -15,9 +15,16 @@ mongoose.connect('mongodb://localhost:27017/db', {
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
 
-app.use(express.static(`${__dirname}/public`));
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: '5ebe84fa30240105b4680687' // вставьте сюда _id созданного в предыдущем пункте пользователя
+  };
+  next();
+});
 app.use('/', userRoutes);
 app.use('/', cardRoutes);
 
