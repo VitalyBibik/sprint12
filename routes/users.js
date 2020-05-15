@@ -1,9 +1,10 @@
 const routes = require('express').Router();
-const users = require('../data/users');
 
-routes.get('/users', (req, res) => {
-  res.status(200).json(users);
-});
+const { getUsers, createUser } = require('../controllers/users');
+
+routes.get('/users', getUsers);
+routes.post('/users', createUser);
+
 routes.all('/users/:_id', (req, res) => {
   const userReq = req.params._id; //eslint-disable-line
   const userFind = users.find((m) => m._id === userReq); //eslint-disable-line
