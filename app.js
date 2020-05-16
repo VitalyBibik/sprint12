@@ -7,7 +7,8 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/db', {
   useNewUrlParser: true,
   useCreateIndex: true,
-  useFindAndModify: false
+  useFindAndModify: false,
+  useUnifiedTopology: true
 });
 
 
