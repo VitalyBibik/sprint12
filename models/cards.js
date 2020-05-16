@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+const validatorCards = require('validator');
 const cardSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -10,10 +10,8 @@ const cardSchema = new mongoose.Schema({
     link: {
         type: String,
         required: true,
-        validate: {
-            validator: function (link){
-                validator.isURL(link);
-            },
+        validate:  {
+            validator: (link) => validatorCards.isURL(link),
             message: props => `${props.value} is not valid link!`
         },
     },
