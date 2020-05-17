@@ -5,7 +5,7 @@ module.exports.getCards = (req, res) => {
     .populate('owner')
     .then((cards) => {
       if (cards.length === 0) {
-        res.status(404).send({ message: 'Cards list is empty' });
+       return  res.status(404).send({ message: 'Cards list is empty' });
       }
       res.send({ data: cards });
     })
