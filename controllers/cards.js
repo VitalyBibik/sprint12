@@ -3,10 +3,14 @@ const Card = require('../models/cards');
 module.exports.getCards = (req, res) => {
   Card.find({})
     .populate('owner')
-    .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(400).send({ message: 'Card not found' }));
+    .then((cards) =>{
+        if (cards.length === 0){
+            res.status(404).send({message:'Cards is empty'})
+        }
+        res.send({ data: cards })
+    })
+    .catch((err) => res.status(404).send({ message: 'Card not found' }));
 };
-
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
       .then((card) => {
@@ -29,9 +33,7 @@ module.exports.deleteCard = (req, res) => {
           res.status(500).send({message: err.message});
         }
       });
-
 };
-
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
@@ -39,14 +41,23 @@ module.exports.createCard = (req, res) => {
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-module.exports.likeCard = (req, res) => Card.findByIdAndUpdate(
-  req.params.cardId,
-  { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-  { new: true },
-);
+module.exports.likeCard = (req, res) => {
+    Card.findByIdAndUpdate(
+        req.params.cardId,
+        {$addToSet: {likes: req.user._id}}, // добавить _id в массив, если его там нет
+        {new: true},
+    )
+        .then((card) => res.send({card}))
+        .catch((err) => res.status(500).send({message: err.message}));
+}
 
-module.exports.dislikeCard = (req, res) => Card.findByIdAndUpdate(
-  req.params.cardId,
-  { $pull: { likes: req.user._id } }, // убрать _id из массива
-  { new: true },
-);
+module.exports.dislikeCard = (req, res) => {
+    Card.findByIdAndUpdate(
+        req.params.cardId,
+        {$pull: {likes: req.user._id}}, // убрать _id из массива
+        {new: true},
+    )
+        .then((card) => res.send({card}))
+        .catch((err) => res.status(500).send({message: err.message}));
+}
+
