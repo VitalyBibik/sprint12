@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const { PORT = 3000 } = process.env;
+const { port = 3000 } = process.env;
 const app = express();
 const mongoose = require('mongoose');
 
@@ -35,6 +35,6 @@ app.all('*', (req, res) => {
 });
 
 
-app.listen(PORT, () => {
-  console.log('Взлетаю без падения');
+app.listen(port, () => {
+  console.log(`App listening at http://localhost:${port}`);
 });
