@@ -54,7 +54,7 @@ module.exports.updateProfile = (req, res) => {
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-module.exports.findByIdAndUpdate = (req, res) => {
+module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.params.id, { avatar }, {
