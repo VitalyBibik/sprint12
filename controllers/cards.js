@@ -5,7 +5,7 @@ module.exports.getCards = (req, res) => {
     .populate('owner')
     .then((cards) =>{
         if (cards.length === 0){
-            res.status(404).send({message:'Cards is empty'})
+            res.status(404).send({message:'Cards list is empty'})
         }
         res.send({ data: cards })
     })
@@ -14,7 +14,7 @@ module.exports.getCards = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
       .then((card) => {
-        const cardFind = card.find((item) => item.id === req.params.cardId);
+        const cardFind = card.find(( item ) => item.id === req.params.cardId);
         if (!cardFind){
           return res.status(404).send({
             message:"Card not found"

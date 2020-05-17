@@ -2,15 +2,37 @@ const User = require('../models/users');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((users) =>{
+      if (users.length === 0) {
+        res.status(404).send({message:'Users list is empty'})
+      }
+      res.send({ data: users })
+      })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
 module.exports.getUser = (req, res) => {
-  console.log('sss', req.params.id);
   User.findById(req.params.id)
-    .then((user) => res.send({ data: user }))
-    .catch(() => res.status(400).send({ message: 'User not found' }));
+    .then((user) => {
+      const userFind = user.find(( item ) => item.id === req.params.id);
+      if (!userFind){
+        return res.status(404).send({
+          message:"User not found"
+        })
+      }
+      res.send({ data: userFind })
+    })
+      .catch((err) => {
+        if (err.name === err.ValidationError) {
+          res.status(400).send({message: err.message});
+        }
+        if (err.name === err.CastError){
+          res.status(400).send({message: err.message});
+        }
+        else {
+          res.status(500).send({message: err.message});
+        }
+      });
 };
 
 module.exports.createUser = (req, res) => {
@@ -23,19 +45,25 @@ module.exports.createUser = (req, res) => {
 };
 
 module.exports.updateProfile = (req, res) => {
-  console.log(req.body);
   const { name, about, avatar } = req.body;
 
-  User.create({ name, about, avatar })
+  User.findByIdAndUpdate(req.params.id,  { name, about, avatar }, {
+    new:true,
+    runValidators: true,
+    upsert: true,
+  },)
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-module.exports.updateAvatar = (req, res) => {
-  console.log(req.body);
-  const { name, about, avatar } = req.body;
+module.exports.findByIdAndUpdate = (req, res) => {
+  const { avatar } = req.body;
 
-  User.create({ name, about, avatar })
+  User.findByIdAndUpdate(req.params.id, { avatar }, {
+    new:true,
+    runValidators: true,
+    upsert: true,
+  },)
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
