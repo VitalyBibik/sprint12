@@ -24,13 +24,12 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === err.ValidationError) {
-       return  res.status(400).send({ message: err.message });
+        return res.status(400).send({ message: err.message });
       }
       if (err.name === err.CastError) {
-        return  res.status(400).send({ message: err.message });
-      } else {
-       return  res.status(500).send({ message: err.message });
+        return res.status(400).send({ message: err.message });
       }
+      return res.status(500).send({ message: err.message });
     });
 };
 module.exports.createCard = (req, res) => {
@@ -39,18 +38,18 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === err.ValidationError) {
-       return  res.status(400).send({ message: err.message });
+        return res.status(400).send({ message: err.message });
       }
       if (err.name === err.CastError) {
-       return  res.status(400).send({ message: err.message });
-      } else { return  res.status(500).send({ message: err.message });}
+        return res.status(400).send({ message: err.message });
+      } return res.status(500).send({ message: err.message });
     });
 };
 
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { $addToSet: { likes: req.user._id } },
     { new: true },
   )
     .then((card) => res.send({ card }))
@@ -60,23 +59,23 @@ module.exports.likeCard = (req, res) => {
       }
       if (err.name === err.CastError) {
         return res.status(400).send({ message: err.message });
-      } else { return res.status(500).send({ message: err.message });}
+      } return res.status(500).send({ message: err.message });
     });
 };
 
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { $pull: { likes: req.user._id } },
     { new: true },
   )
     .then((card) => res.send({ card }))
     .catch((err) => {
       if (err.name === err.ValidationError) {
-       return  res.status(400).send({ message: err.message });
+        return res.status(400).send({ message: err.message });
       }
       if (err.name === err.CastError) {
-       return  res.status(400).send({ message: err.message });
-      } else { return  res.status(500).send({ message: err.message });}
+        return res.status(400).send({ message: err.message });
+      } return res.status(500).send({ message: err.message });
     });
 };

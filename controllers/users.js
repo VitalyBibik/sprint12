@@ -4,9 +4,9 @@ module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => {
       if (users.length === 0) {
-       return res.status(404).send({ message: 'Users list is empty' });
+        return res.status(404).send({ message: 'Users list is empty' });
       }
-     return res.send({ data: users });
+      return res.send({ data: users });
     })
     .catch((err) => {
       if (err.name === err.ValidationError) {
@@ -14,9 +14,8 @@ module.exports.getUsers = (req, res) => {
       }
       if (err.name === err.CastError) {
         return res.status(400).send({ message: err.message });
-      } else {
-        return res.status(500).send({ message: err.message });
       }
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -37,9 +36,8 @@ module.exports.getUser = (req, res) => {
       }
       if (err.name === err.CastError) {
         return res.status(400).send({ message: err.message });
-      } else {
-       return res.status(500).send({ message: err.message });
       }
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -54,9 +52,8 @@ module.exports.createUser = (req, res) => {
       }
       if (err.name === err.CastError) {
         return res.status(400).send({ message: err.message });
-      } else {
-        return res.status(500).send({ message: err.message });
       }
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -69,21 +66,20 @@ module.exports.updateProfile = (req, res) => {
     upsert: true,
   })
     .then((user) => {
-    const userFind = user.find((item) => item.id === req.params.id);
-    if (!userFind) {
-    return  res.status(404).send({ message: 'User not found' });
-  }
-  return res.send({ data: userFind });
-})
+      const userFind = user.find((item) => item.id === req.params.id);
+      if (!userFind) {
+        return res.status(404).send({ message: 'User not found' });
+      }
+      return res.send({ data: userFind });
+    })
     .catch((err) => {
       if (err.name === err.ValidationError) {
         return res.status(400).send({ message: err.message });
       }
       if (err.name === err.CastError) {
         return res.status(400).send({ message: err.message });
-      } else {
-        return res.status(500).send({ message: err.message });
       }
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -98,7 +94,7 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => {
       const userFind = user.find((item) => item.id === req.params.id);
       if (!userFind) {
-        return  res.status(404).send({ message: 'User not found' });
+        return res.status(404).send({ message: 'User not found' });
       }
       return res.send({ data: userFind });
     })
@@ -108,8 +104,7 @@ module.exports.updateAvatar = (req, res) => {
       }
       if (err.name === err.CastError) {
         return res.status(400).send({ message: err.message });
-      } else {
-        return res.status(500).send({ message: err.message });
       }
+      return res.status(500).send({ message: err.message });
     });
 };
