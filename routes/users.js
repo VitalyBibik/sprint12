@@ -6,8 +6,8 @@ const {
 
 routes.get('/users', getUsers);
 routes.post('/users', createUser);
-routes.all('/users/:id', getUser);
+routes.get('/users/:id', getUser);
 routes.patch('/users/me', updateProfile);
-routes.patch('/users/avatar', updateAvatar);
+routes.patch('/users/me/avatar', updateAvatar);
 
 module.exports = routes;

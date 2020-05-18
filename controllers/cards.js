@@ -5,9 +5,9 @@ module.exports.getCards = (req, res) => {
     .populate('owner')
     .then((cards) => {
       if (cards.length === 0) {
-        res.status(404).send({ message: 'Cards list is empty' });
+        return res.status(404).send({ message: 'Cards list is empty' });
       }
-      res.send({ data: cards });
+      return res.send({ data: cards });
     })
     .catch((err) => res.status(500).send({ message: err.message }));
 };
@@ -24,38 +24,58 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === err.ValidationError) {
-        res.status(400).send({ message: err.message });
+        return res.status(400).send({ message: err.message });
       }
       if (err.name === err.CastError) {
-        res.status(400).send({ message: err.message });
-      } else {
-        res.status(500).send({ message: err.message });
+        return res.status(400).send({ message: err.message });
       }
+      return res.status(500).send({ message: err.message });
     });
 };
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === err.ValidationError) {
+        return res.status(400).send({ message: err.message });
+      }
+      if (err.name === err.CastError) {
+        return res.status(400).send({ message: err.message });
+      } return res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { $addToSet: { likes: req.user._id } },
     { new: true },
   )
     .then((card) => res.send({ card }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === err.ValidationError) {
+        return res.status(400).send({ message: err.message });
+      }
+      if (err.name === err.CastError) {
+        return res.status(400).send({ message: err.message });
+      } return res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { $pull: { likes: req.user._id } },
     { new: true },
   )
     .then((card) => res.send({ card }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === err.ValidationError) {
+        return res.status(400).send({ message: err.message });
+      }
+      if (err.name === err.CastError) {
+        return res.status(400).send({ message: err.message });
+      } return res.status(500).send({ message: err.message });
+    });
 };
