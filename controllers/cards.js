@@ -69,7 +69,12 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.send({ card }))
+    .then((card) => {
+        if (card.length === 0) {
+            return res.status(404).send({ message: 'Like is empty' });
+        }
+        return res.send({ data: card });
+    })
     .catch((err) => {
       if (err.name === err.ValidationError) {
         return res.status(400).send({ message: err.message });
