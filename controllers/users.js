@@ -4,11 +4,20 @@ module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => {
       if (users.length === 0) {
-        res.status(404).send({ message: 'Users list is empty' });
+       return res.status(404).send({ message: 'Users list is empty' });
       }
-      res.send({ data: users });
+     return res.send({ data: users });
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === err.ValidationError) {
+        return res.status(400).send({ message: err.message });
+      }
+      if (err.name === err.CastError) {
+        return res.status(400).send({ message: err.message });
+      } else {
+        return res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.getUser = (req, res) => {
@@ -24,12 +33,12 @@ module.exports.getUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === err.ValidationError) {
-        res.status(400).send({ message: err.message });
+        return res.status(400).send({ message: err.message });
       }
       if (err.name === err.CastError) {
-        res.status(400).send({ message: err.message });
+        return res.status(400).send({ message: err.message });
       } else {
-        res.status(500).send({ message: err.message });
+       return res.status(500).send({ message: err.message });
       }
     });
 };
@@ -39,7 +48,16 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === err.ValidationError) {
+        return res.status(400).send({ message: err.message });
+      }
+      if (err.name === err.CastError) {
+        return res.status(400).send({ message: err.message });
+      } else {
+        return res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.updateProfile = (req, res) => {
@@ -50,8 +68,23 @@ module.exports.updateProfile = (req, res) => {
     runValidators: true,
     upsert: true,
   })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((user) => {
+    const userFind = user.find((item) => item.id === req.params.id);
+    if (!userFind) {
+    return  res.status(404).send({ message: 'User not found' });
+  }
+  return res.send({ data: userFind });
+})
+    .catch((err) => {
+      if (err.name === err.ValidationError) {
+        return res.status(400).send({ message: err.message });
+      }
+      if (err.name === err.CastError) {
+        return res.status(400).send({ message: err.message });
+      } else {
+        return res.status(500).send({ message: err.message });
+      }
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -62,6 +95,21 @@ module.exports.updateAvatar = (req, res) => {
     runValidators: true,
     upsert: true,
   })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((user) => {
+      const userFind = user.find((item) => item.id === req.params.id);
+      if (!userFind) {
+        return  res.status(404).send({ message: 'User not found' });
+      }
+      return res.send({ data: userFind });
+    })
+    .catch((err) => {
+      if (err.name === err.ValidationError) {
+        return res.status(400).send({ message: err.message });
+      }
+      if (err.name === err.CastError) {
+        return res.status(400).send({ message: err.message });
+      } else {
+        return res.status(500).send({ message: err.message });
+      }
+    });
 };

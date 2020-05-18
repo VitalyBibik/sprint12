@@ -1,4 +1,4 @@
-  const routes = require('express').Router();
+const routes = require('express').Router();
 
 const {
   getUsers, getUser, createUser, updateProfile, updateAvatar,
