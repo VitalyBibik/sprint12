@@ -1,5 +1,5 @@
 {
-  "name": "sprint12",
+  "name": "sprint-backend",
   "version": "1.0.0",
   "description": "nodeServer",
   "main": "app.js",
@@ -8,12 +8,14 @@
     "dev": "nodemon app.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Vitaly Bibik <wital2010@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "nodemon": "^2.0.3"
+    "mongoose": "^5.9.14",
+    "nodemon": "^2.0.3",
+    "validator": "^13.0.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",

@@ -1,16 +1,13 @@
 const routes = require('express').Router();
-const users = require('../data/users');
 
-routes.get('/users', (req, res) => {
-  res.status(200).json(users);
-});
-routes.all('/users/:_id', (req, res) => {
-  const userReq = req.params._id; //eslint-disable-line
-  const userFind = users.find((m) => m._id === userReq); //eslint-disable-line
-  if (userFind) {
-    res.status(200).json(userFind);
-  } else {
-    res.status(404).json({ message: 'Нет пользователя с таким id' });
-  }
-});
+const {
+  getUsers, getUser, createUser, updateProfile, updateAvatar,
+} = require('../controllers/users');
+
+routes.get('/users', getUsers);
+routes.post('/users', createUser);
+routes.get('/users/:id', getUser);
+routes.patch('/users/me', updateProfile);
+routes.patch('/users/me/avatar', updateAvatar);
+
 module.exports = routes;
