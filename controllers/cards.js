@@ -12,7 +12,8 @@ module.exports.getCards = (req, res) => {
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  const { id } = req.params;
+  Card.findById(id).populate('owner')
     .then((card) => {
       const cardFind = card.find((item) => item.id === req.params.cardId);
       if (!cardFind) {
@@ -20,7 +21,11 @@ module.exports.deleteCard = (req, res) => {
           message: 'Card not found',
         });
       }
-      return res.send({ data: cardFind });
+      if (card.owner._id.toString() !== req.user._id) {
+        return res.status(403).send({ message: 'Access denied' });
+      }
+      return Card.findByIdAndRemove(id)
+        .then(() => res.send({ card }));
     })
     .catch((err) => {
       if (err.name === err.ValidationError) {
@@ -32,6 +37,7 @@ module.exports.deleteCard = (req, res) => {
       return res.status(500).send({ message: err.message });
     });
 };
+
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
@@ -70,10 +76,10 @@ module.exports.dislikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-        if (card.length === 0) {
-            return res.status(404).send({ message: 'Like is empty' });
-        }
-        return res.send({ data: card });
+      if (card.length === 0) {
+        return res.status(404).send({ message: 'Like is empty' });
+      }
+      return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === err.ValidationError) {

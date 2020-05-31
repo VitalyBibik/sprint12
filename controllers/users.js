@@ -1,5 +1,7 @@
-const User = require('../models/users');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/users');
+const { PRIVATE_KEY } = require('../config');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -43,9 +45,14 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar, email, password } = req.body;
-
-  User.create({ name, about, avatar, email, password  })
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
+    .then((createdUser) => User.findById(createdUser._id))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === err.ValidationError) {
@@ -57,6 +64,25 @@ module.exports.createUser = (req, res) => {
       return res.status(500).send({ message: err.message });
     });
 };
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id },
+        PRIVATE_KEY,
+        { expiresIn: '7d' });
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+      });
+      res.send({ token });
+    })
+    .catch((error) => {
+      res.status(401).send({ message: error.message });
+    });
+};
+
 
 module.exports.updateProfile = (req, res) => {
   const { name, about, avatar } = req.body;
@@ -74,7 +100,7 @@ module.exports.updateProfile = (req, res) => {
       return res.send({ data: userFind });
     })
     .catch((err) => {
-      if (err.name === err.ValidationError ) {
+      if (err.name === err.ValidationError) {
         return res.status(400).send({ message: err.message });
       }
       if (err.name === err.CastError) {

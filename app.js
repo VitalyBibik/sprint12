@@ -1,12 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { port = 3000 } = process.env;
+
 const app = express();
 const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const { login, createUser } = require('./controllers/users');
+const { PORT, DATABASE_URL } = require('./config');
 
-/*  Начать делать роуты для авторизации и безопасность */
-mongoose.connect('mongodb://localhost:27017/db', {
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // за 15 минут
+  max: 100, // можно совершить максимум 100 запросов с одного IP
+});
+
+mongoose.connect(DATABASE_URL, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -20,13 +29,12 @@ const cardRoutes = require('./routes/cards');
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(limiter);
+app.use(helmet());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '5ebe84fa30240105b4680687', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
-  next();
-});
+
+app.post('/signin', login);
+app.post('/signup', createUser);
 app.use('/', userRoutes);
 app.use('/', cardRoutes);
 
@@ -36,6 +44,6 @@ app.all('*', (req, res) => {
 });
 
 
-app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`App listening at http://localhost:${PORT}`);
 });
