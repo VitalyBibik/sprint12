@@ -12,10 +12,10 @@ module.exports.getUsers = (req, res) => {
       return res.send({ data: users });
     })
     .catch((err) => {
-      if (err.name === err.ValidationError) {
+      if (err.name === 'ValidationError') {
         return res.status(400).send({ message: err.message });
       }
-      if (err.name === err.CastError) {
+      if (err.name === 'CastError') {
         return res.status(400).send({ message: err.message });
       }
       return res.status(500).send({ message: err.message });
@@ -34,10 +34,10 @@ module.exports.getUser = (req, res) => {
       return res.send({ data: userFind });
     })
     .catch((err) => {
-      if (err.name === err.ValidationError) {
+      if (err.name === 'ValidationError') {
         return res.status(400).send({ message: err.message });
       }
-      if (err.name === err.CastError) {
+      if (err.name === 'CastError') {
         return res.status(400).send({ message: err.message });
       }
       return res.status(500).send({ message: err.message });
@@ -55,10 +55,10 @@ module.exports.createUser = (req, res) => {
     .then((createdUser) => User.findById(createdUser._id))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === err.ValidationError) {
+      if (err.name === 'ValidationError') {
         return res.status(400).send({ message: err.message });
       }
-      if (err.name === err.CastError) {
+      if (err.name === 'CastError') {
         return res.status(400).send({ message: err.message });
       }
       return res.status(500).send({ message: err.message });
@@ -100,10 +100,10 @@ module.exports.updateProfile = (req, res) => {
       return res.send({ data: userFind });
     })
     .catch((err) => {
-      if (err.name === err.ValidationError) {
+      if (err.name === 'ValidationError') {
         return res.status(400).send({ message: err.message });
       }
-      if (err.name === err.CastError) {
+      if (err.name === 'CastError') {
         return res.status(400).send({ message: err.message });
       }
       return res.status(500).send({ message: err.message });
@@ -126,10 +126,10 @@ module.exports.updateAvatar = (req, res) => {
       return res.send({ data: userFind });
     })
     .catch((err) => {
-      if (err.name === err.ValidationError) {
+      if (err.name === 'ValidationError') {
         return res.status(400).send({ message: err.message });
       }
-      if (err.name === err.CastError) {
+      if (err.name === 'CastError') {
         return res.status(400).send({ message: err.message });
       }
       return res.status(500).send({ message: err.message });

@@ -31,13 +31,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(limiter);
 app.use(helmet());
-
-
-
-
 app.use('/', userRoutes);
 app.use('/', cardRoutes);
-
 
 app.all('*', (req, res) => {
   res.status(404).json({ message: 'Запрашиваемый ресурс не найден' });
