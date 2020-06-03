@@ -77,7 +77,7 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (card.length === 0) {
-        return res.status(404).send({ message: 'Like is empty' });
+        return res.status(404).send({ message: 'Cards not found' });
       }
       return res.send({ data: card });
     })
