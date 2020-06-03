@@ -6,7 +6,7 @@ const app = express();
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const { login, createUser } = require('./controllers/users');
+
 const { PORT, DATABASE_URL } = require('./config');
 
 
@@ -33,8 +33,8 @@ app.use(limiter);
 app.use(helmet());
 
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+
+
 app.use('/', userRoutes);
 app.use('/', cardRoutes);
 
