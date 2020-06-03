@@ -15,12 +15,6 @@ module.exports.deleteCard = (req, res) => {
   const { id } = req.params;
   Card.findById(id).populate('owner')
     .then((card) => {
-      const cardFind = card.find((item) => item.id === req.params.cardId);
-      if (!cardFind) {
-        return res.status(404).send({
-          message: 'Card not found',
-        });
-      }
       if (card.owner._id.toString() !== req.user._id) {
         return res.status(403).send({ message: 'Access denied' });
       }

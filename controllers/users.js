@@ -92,13 +92,7 @@ module.exports.updateProfile = (req, res) => {
     runValidators: true,
     upsert: true,
   })
-    .then((user) => {
-      const userFind = user.find((item) => item.id === req.params.id);
-      if (!userFind) {
-        return res.status(404).send({ message: 'User not found' });
-      }
-      return res.send({ data: userFind });
-    })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: err.message });
@@ -118,13 +112,7 @@ module.exports.updateAvatar = (req, res) => {
     runValidators: true,
     upsert: true,
   })
-    .then((user) => {
-      const userFind = user.find((item) => item.id === req.params.id);
-      if (!userFind) {
-        return res.status(404).send({ message: 'User not found' });
-      }
-      return res.send({ data: userFind });
-    })
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: err.message });
