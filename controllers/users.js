@@ -25,13 +25,12 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUser = (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
-      const userFind = user.find((item) => item.id === req.params.id);
-      if (!userFind) {
+      if (!user) {
         return res.status(404).send({
           message: 'User not found',
         });
       }
-      return res.send({ data: userFind });
+      return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -106,7 +105,7 @@ module.exports.updateProfile = (req, res) => {
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-
+  console.log(req.params);
   User.findByIdAndUpdate(req.params.id, { avatar }, {
     new: true,
     runValidators: true,

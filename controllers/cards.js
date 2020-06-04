@@ -12,13 +12,13 @@ module.exports.getCards = (req, res) => {
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 module.exports.deleteCard = (req, res) => {
-  const { id } = req.params;
-  Card.findById(id).populate('owner')
+  const { cardId } = req.params;
+  Card.findById(cardId).populate('owner')
     .then((card) => {
       if (card.owner._id.toString() !== req.user._id) {
         return res.status(403).send({ message: 'Access denied' });
       }
-      return Card.findByIdAndRemove(id)
+      return Card.findByIdAndRemove(cardId)
         .then(() => res.send({ card }));
     })
     .catch((err) => {
