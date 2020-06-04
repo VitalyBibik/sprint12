@@ -16,7 +16,7 @@ module.exports.deleteCard = (req, res) => {
   Card.findById(cardId).populate('owner')
     .then((card) => {
       if (card.owner._id.toString() !== req.user._id) {
-        return res.status(403).send({ message: 'Access denied' });
+        return res.status(401).send({ message: 'Access denied' });
       }
       return Card.findByIdAndRemove(cardId)
         .then(() => res.send({ card }));

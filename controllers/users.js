@@ -82,11 +82,11 @@ module.exports.login = (req, res) => {
     });
 };
 
-
+// tut
 module.exports.updateProfile = (req, res) => {
-  const { name, about, avatar } = req.body;
+  const { name, about } = req.body;
 
-  User.findByIdAndUpdate(req.params.id, { name, about, avatar }, {
+  User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true,
     runValidators: true,
     upsert: true,
@@ -102,7 +102,7 @@ module.exports.updateProfile = (req, res) => {
       return res.status(500).send({ message: err.message });
     });
 };
-
+// tut
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   console.log(req.params);
