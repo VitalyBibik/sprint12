@@ -11,6 +11,6 @@ routes.post('/signin', login);
 routes.post('/users', auth, getUsers);
 routes.get('/users/:id', auth, getUser);
 routes.patch('/users/me', auth, updateProfile);
-routes.patch('/users/me/avatar', auth, updateAvatar);//tyt
+routes.patch('/users/me/avatar', auth, updateAvatar);
 
 module.exports = routes;
