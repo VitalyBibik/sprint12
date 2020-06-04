@@ -2,121 +2,107 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 const { PRIVATE_KEY } = require('../config');
+const NotFoundError = require('../errors/NotFoundError');
+const NeedAuthError = require('../errors/NeedAuthError');
 
-module.exports.getUsers = (req, res) => {
-  User.find({})
-    .then((users) => {
-      if (users.length === 0) {
-        return res.status(404).send({ message: 'Users list is empty' });
-      }
-      return res.send({ data: users });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
+module.exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find({})
+      .orFail(() => new NotFoundError('Users list is empty'));
+    return res.send(users);
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    return res.status(statusCode).send({
+      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
     });
+  }
 };
 
-module.exports.getUser = (req, res) => {
-  User.findById(req.params.id)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({
-          message: 'User not found',
-        });
-      }
-      return res.send({ data: user });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
+
+module.exports.getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+      .orFail(() => new NotFoundError('User not found'));
+    return res.send(user);
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    return res.status(statusCode).send({
+      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
     });
+  }
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = async (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
+  try {
+    const hash = await bcrypt.hash(password, 10);
+    const newUser = await User.create({
       name, about, avatar, email, password: hash,
-    }))
-    .then((createdUser) => User.findById(createdUser._id))
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
     });
+    return res.send({
+      name: newUser.name, about: newUser.about, avatar: newUser.avatar, email: newUser.email,
+    });
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    return res.status(statusCode).send({
+      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
+    });
+  }
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = async (req, res) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id },
-        PRIVATE_KEY,
-        { expiresIn: '7d' });
-      res.cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-      });
-      res.send({ token });
-    })
-    .catch((error) => {
-      res.status(401).send({ message: error.message });
+  try {
+    const userlogin = await User.findUserByCredentials(email, password)
+    const token = jwt.sign({ _id: userlogin._id },
+      PRIVATE_KEY,
+      { expiresIn: '7d' });
+    res.cookie('jwt', token, {
+      maxAge: 3600000 * 24 * 7,
+      httpOnly: true,
     });
+    return res.send({ token });
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    return res.status(statusCode).send({
+      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
+    });
+  }
 };
 
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = async (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, {
-    new: true,
-    runValidators: true,
-    upsert: true,
-  })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
+  try {
+    const updateUserProfile = await User.findByIdAndUpdate(req.user._id, { name, about }, {
+      new: true,
+      runValidators: true,
+      upsert: true,
+    }).orFail(() => new NotFoundError('User not found'));
+    return res.send(updateUserProfile);
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    return res.status(statusCode).send({
+      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
     });
+  }
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = async (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, {
-    new: true,
-    runValidators: true,
-    upsert: true,
-  })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
+  try {
+    const userUpdateAvatar = await User.findByIdAndUpdate(req.user._id, { avatar }, {
+      new: true,
+      runValidators: true,
+      upsert: true,
+    }).orFail(() => new NotFoundError('User not found'));
+    return res.send(userUpdateAvatar);
+  } catch (err) {
+    const statusCode = err.statusCode || 500;
+    return res.status(statusCode).send({
+      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
     });
+  }
 };
