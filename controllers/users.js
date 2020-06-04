@@ -85,7 +85,6 @@ module.exports.login = (req, res) => {
 // tut
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
-
   User.findByIdAndUpdate(req.user._id, { name, about }, {
     new: true,
     runValidators: true,
@@ -105,8 +104,7 @@ module.exports.updateProfile = (req, res) => {
 // tut
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  console.log(req.params);
-  User.findByIdAndUpdate(req.params.id, { avatar }, {
+  User.findByIdAndUpdate(req.user._id, { avatar }, {
     new: true,
     runValidators: true,
     upsert: true,
