@@ -3,7 +3,7 @@ function FoundError(error, res) {
     return res.status(400).send({ message: error.message });
   }
   if (error.name === 'CastError') {
-    return res.status(400).send({ message: error.message });
+    return res.status(400).send({ message: 'id is not found' });
   }
   return res.status(500).send({ message: error.message });
 }

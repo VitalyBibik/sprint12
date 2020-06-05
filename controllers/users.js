@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 const { PRIVATE_KEY } = require('../config');
 const NotFoundError = require('../errors/NotFoundError');
-const NeedAuthError = require('../errors/NeedAuthError');
+const FoundError = require('../errors/FoundError');
 
 module.exports.getUsers = async (req, res) => {
   try {
@@ -11,10 +11,7 @@ module.exports.getUsers = async (req, res) => {
       .orFail(() => new NotFoundError('Users list is empty'));
     return res.send(users);
   } catch (err) {
-    const statusCode = err.statusCode || 500;
-    return res.status(statusCode).send({
-      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
-    });
+    return FoundError(err, res);
   }
 };
 
@@ -25,10 +22,7 @@ module.exports.getUser = async (req, res) => {
       .orFail(() => new NotFoundError('User not found'));
     return res.send(user);
   } catch (err) {
-    const statusCode = err.statusCode || 500;
-    return res.status(statusCode).send({
-      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
-    });
+    return FoundError(err, res);
   }
 };
 
@@ -45,17 +39,14 @@ module.exports.createUser = async (req, res) => {
       name: newUser.name, about: newUser.about, avatar: newUser.avatar, email: newUser.email,
     });
   } catch (err) {
-    const statusCode = err.statusCode || 500;
-    return res.status(statusCode).send({
-      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
-    });
+    return FoundError(err, res);
   }
 };
 
 module.exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const userlogin = await User.findUserByCredentials(email, password)
+    const userlogin = await User.findUserByCredentials(email, password);
     const token = jwt.sign({ _id: userlogin._id },
       PRIVATE_KEY,
       { expiresIn: '7d' });
@@ -65,10 +56,7 @@ module.exports.login = async (req, res) => {
     });
     return res.send({ token });
   } catch (err) {
-    const statusCode = err.statusCode || 500;
-    return res.status(statusCode).send({
-      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
-    });
+    return FoundError(err, res);
   }
 };
 
@@ -83,10 +71,7 @@ module.exports.updateProfile = async (req, res) => {
     }).orFail(() => new NotFoundError('User not found'));
     return res.send(updateUserProfile);
   } catch (err) {
-    const statusCode = err.statusCode || 500;
-    return res.status(statusCode).send({
-      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
-    });
+    return FoundError(err, res);
   }
 };
 
@@ -100,9 +85,6 @@ module.exports.updateAvatar = async (req, res) => {
     }).orFail(() => new NotFoundError('User not found'));
     return res.send(userUpdateAvatar);
   } catch (err) {
-    const statusCode = err.statusCode || 500;
-    return res.status(statusCode).send({
-      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
-    });
+    return FoundError(err, res);
   }
 };

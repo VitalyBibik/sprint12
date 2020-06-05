@@ -17,8 +17,8 @@ module.exports.deleteCard = async (req, res) => {
   try {
     const userDeleteCard = await Card.findById(cardId).populate('owner')
       .orFail(() => new NotFoundError('Card list is empty'));
-    if (userDeleteCard.owner.equals(req.user._id)) {
-      throw new AccecDeniedError('Access denied');
+    if (!userDeleteCard.owner.equals(req.user._id)) {
+      await Promise.reject(new AccecDeniedError('Access denied'));
     }
     await userDeleteCard.remove();
     return res.send({ data: userDeleteCard });
