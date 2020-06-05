@@ -1,6 +1,7 @@
 const Card = require('../models/cards');
 const NotFoundError = require('../errors/NotFoundError');
 const AccecDeniedError = require('../errors/AccecDeniedError');
+const FoundError = require('../errors/FoundError');
 
 module.exports.getCards = async (req, res) => {
   try {
@@ -8,10 +9,7 @@ module.exports.getCards = async (req, res) => {
       .orFail(() => new NotFoundError('Card list is empty'));
     return res.send(userGetCards);
   } catch (err) {
-    const statusCode = err.statusCode || 500;
-    return res.status(statusCode).send({
-      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
-    });
+    return FoundError(err, res);
   }
 };
 module.exports.deleteCard = async (req, res) => {
@@ -19,30 +17,23 @@ module.exports.deleteCard = async (req, res) => {
   try {
     const userDeleteCard = await Card.findById(cardId).populate('owner')
       .orFail(() => new NotFoundError('Card list is empty'));
-    if (userDeleteCard.owner.toString !== req.user._id) {
+    if (userDeleteCard.owner.equals(req.user._id)) {
       throw new AccecDeniedError('Access denied');
     }
     await userDeleteCard.remove();
     return res.send({ data: userDeleteCard });
   } catch (err) {
-    const statusCode = err.statusCode || 500;
-    return res.status(statusCode).send({
-      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
-    });
+    return FoundError(err, res);
   }
 };
 
 module.exports.createCard = async (req, res) => {
   const { name, link } = req.body;
   try {
-    const userCreateCard = await Card.create({ name, link, owner: req.user._id })
-      .orFail(() => new NotFoundError('Card list is empty'));
+    const userCreateCard = await Card.create({ name, link, owner: req.user._id });
     return res.send(userCreateCard);
   } catch (err) {
-    const statusCode = err.statusCode || 500;
-    return res.status(statusCode).send({
-      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
-    });
+    return FoundError(err, res);
   }
 };
 
@@ -55,10 +46,7 @@ module.exports.likeCard = async (req, res) => {
     ).orFail(() => new NotFoundError('Card list is empty'));
     return res.send(userLikeCard);
   } catch (err) {
-    const statusCode = err.statusCode || 500;
-    return res.status(statusCode).send({
-      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
-    });
+    return FoundError(err, res);
   }
 };
 
@@ -72,9 +60,6 @@ module.exports.dislikeCard = async (req, res) => {
     ).orFail(() => new NotFoundError('Card list is empty'));
     return res.send(userDislikeCard);
   } catch (err) {
-    const statusCode = err.statusCode || 500;
-    return res.status(statusCode).send({
-      message: statusCode === 500 ? 'Произошла ошибка' : err.message,
-    });
+    return FoundError(err, res);
   }
 };

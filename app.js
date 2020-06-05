@@ -12,7 +12,7 @@ const { PORT, DATABASE_URL } = require('./config');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // за 15 минут
-  max: 100, // можно совершить максимум 100 запросов с одного IP
+  max: 10000000, // можно совершить максимум 100 запросов с одного IP
 });
 
 mongoose.connect(DATABASE_URL, {
