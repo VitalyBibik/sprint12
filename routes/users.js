@@ -8,7 +8,7 @@ const {
 routes.post('/signup', createUser);
 routes.post('/signin', login);
 
-routes.post('/users', auth, getUsers);
+routes.get('/users', auth, getUsers);
 routes.get('/users/:id', auth, getUser);
 routes.patch('/users/me', auth, updateProfile);
 routes.patch('/users/me/avatar', auth, updateAvatar);

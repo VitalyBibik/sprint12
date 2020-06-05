@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validatorUsers = require('validator');
 const bcrypt = require('bcryptjs');
 const NeedAuthError = require('../errors/NeedAuthError');
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
