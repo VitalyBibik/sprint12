@@ -4,15 +4,14 @@ const cookieParser = require('cookie-parser');
 
 const { errors } = require('celebrate');
 
-const { requestLogger, errorLogger } = require('./middleware/logger');
-
 const app = express();
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 
+const { requestLogger, errorLogger } = require('./middleware/logger');
 const { PORT, DATABASE_URL } = require('./config');
-const errorHandler = require('./errors/errorHandler');
+const FoundError = require('./errors/FoundError');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // за 15 минут
@@ -45,7 +44,7 @@ app.use(helmet());
 
 app.use('/', userRoutes);
 app.use('/', cardRoutes);
-app.use('/', errorHandler);
+app.use('/', FoundError);
 
 app.use(errors());
 app.use(errorLogger);
