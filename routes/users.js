@@ -1,5 +1,5 @@
 const routes = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
+const { Joi, celebrate } = require('celebrate');
 const auth = require('../middleware/auth');
 
 const {
@@ -7,8 +7,8 @@ const {
 } = require('../controllers/users');
 
 routes.post('/signup', celebrate({
-  body: Joi.object.keys()({
-    email: Joi.string().email().required(),
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
@@ -16,8 +16,8 @@ routes.post('/signup', celebrate({
   }),
 }), createUser);
 routes.post('/signin', celebrate({
-  body: Joi.object.keys()({
-    email: Joi.string().email().required(),
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),
 }), login);
