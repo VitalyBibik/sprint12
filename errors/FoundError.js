@@ -1,4 +1,4 @@
-function FoundError(error, res, req, next) {
+function FoundError(error, res) {
   if (error.name === 'ValidationError') {
     return res.status(400).send({ message: error.message });
   }
