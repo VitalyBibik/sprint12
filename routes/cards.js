@@ -15,10 +15,18 @@ routes.post('/cards', celebrate({
 }), auth, createCard);
 routes.delete('/cards/:cardId', celebrate({
   body: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24)
+    cardId: Joi.string().alphanum().length(24),
   }),
 }), auth, deleteCard);
-routes.put('/cards/:cardId/likes', auth, likeCard);
-routes.delete('/cards/:cardId/likes', auth, dislikeCard);
+routes.put('/cards/:cardId/likes', celebrate({
+  body: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), auth, likeCard);
+routes.delete('/cards/:cardId/likes', celebrate({
+  body: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), auth, dislikeCard);
 
 module.exports = routes;
