@@ -5,7 +5,7 @@ const AccecDeniedError = require('../errors/AccecDeniedError');
 
 module.exports.getCards = async (req, res, next) => {
   try {
-    const userGetCards = await Card.find({}).populate('owner')
+    const userGetCards = await Card.find({})
       .orFail(() => new NotFoundError('Card list is empty'));
     return res.send(userGetCards);
   } catch (err) {
