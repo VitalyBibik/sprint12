@@ -31,7 +31,12 @@ routes.get('/users/:id', celebrate({
     userId: Joi.string().alphanum().length(24),
   }),
 }), auth, getUser);
-routes.patch('/users/me', auth, updateProfile);
+routes.patch('/users/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
+  }),
+}), auth, updateProfile);
 routes.patch('/users/me/avatar', auth, updateAvatar);
 
 module.exports = routes;
