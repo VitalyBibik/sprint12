@@ -1,5 +1,3 @@
-import ErrorHandler from "./errors/ErrorHandler";
-
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,17 +6,15 @@ const { errors } = require('celebrate');
 
 const app = express();
 const mongoose = require('mongoose');
-const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 
 const { requestLogger, errorLogger } = require('./middleware/logger');
 const { PORT, DATABASE_URL } = require('./config');
-const NotValidUrl = require('./middleware/NotValidUrl');
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // за 15 минут
-  max: 10000, // можно совершить максимум 10000 запросов с одного IP
-});
+const ErrorHandler = require('./middleware/ErrorHandler');
+
+const NotValidUrl = require('./NotValidUrl');
+const { limiter } = require('./limiter');
 
 mongoose.connect(DATABASE_URL, {
   useNewUrlParser: true,
