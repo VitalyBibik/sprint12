@@ -1,3 +1,5 @@
+import ErrorHandler from "./errors/ErrorHandler";
+
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -11,7 +13,7 @@ const helmet = require('helmet');
 
 const { requestLogger, errorLogger } = require('./middleware/logger');
 const { PORT, DATABASE_URL } = require('./config');
-const ErrorHandler = require('./errors/ErrorHandler');
+const NotValidUrl = require('./middleware/NotValidUrl');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // за 15 минут
@@ -44,9 +46,7 @@ app.use(helmet());
 
 app.use('/', userRoutes);
 app.use('/', cardRoutes);
-app.use('*', (req, res) => {
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
-});
+app.use('*', NotValidUrl);
 app.use('/', ErrorHandler);
 
 app.use(errors());
