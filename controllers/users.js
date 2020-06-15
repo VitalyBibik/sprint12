@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
-const { PRIVATE_KEY } = require('../config');
+const { PRIVATE_KEY } = require('../config'); // TODO PRIVATE KEY NEED DELETE
 const NotFoundError = require('../errors/NotFoundError');
 
 
