@@ -14,7 +14,7 @@ const FoundError = require('./errors/FoundError');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // за 15 минут
-  max: 100000, // можно совершить максимум 10000 запросов с одного IP
+  max: 10000, // можно совершить максимум 10000 запросов с одного IP
 });
 
 mongoose.connect(DATABASE_URL, {
