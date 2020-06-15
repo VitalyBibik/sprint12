@@ -13,7 +13,11 @@ routes.post('/cards', celebrate({
     link: Joi.string().required().custom(validatorLink),
   }),
 }), auth, createCard);
-routes.delete('/cards/:cardId', auth, deleteCard);
+routes.delete('/cards/:cardId', celebrate({
+  body: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24)
+  }),
+}), auth, deleteCard);
 routes.put('/cards/:cardId/likes', auth, likeCard);
 routes.delete('/cards/:cardId/likes', auth, dislikeCard);
 
