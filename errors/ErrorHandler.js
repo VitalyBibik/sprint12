@@ -1,4 +1,4 @@
-function FoundError(error, res) {
+function ErrorHandler(error, res) {
   if (error.name === 'ValidationError') {
     return res.status(400).send({ message: error.message });
   }
@@ -11,4 +11,4 @@ function FoundError(error, res) {
     message: statusCode === 500 ? 'Произошла ошибка' : error.message,
   });
 }
-module.exports = FoundError;
+module.exports = ErrorHandler;

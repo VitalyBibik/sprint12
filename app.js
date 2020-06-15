@@ -10,7 +10,7 @@ const helmet = require('helmet');
 
 const { requestLogger, errorLogger } = require('./middleware/logger');
 const { PORT, DATABASE_URL } = require('./config');
-const FoundError = require('./errors/FoundError');
+const ErrorHandler = require('./errors/ErrorHandler');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // за 15 минут
@@ -43,7 +43,7 @@ app.use(helmet());
 
 app.use('/', userRoutes);
 app.use('/', cardRoutes);
-app.use('/', FoundError);
+app.use('/', ErrorHandler);
 
 app.use(errors());
 app.use(errorLogger);
