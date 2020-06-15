@@ -26,11 +26,11 @@ routes.post('/signin', celebrate({
 }), login);
 
 routes.get('/users', auth, getUsers);
-routes.get('/users/:id', auth, celebrate({
+routes.get('/users/:id', celebrate({
   params: Joi.object().keys({
     userId: Joi.string().alphanum().length(24),
   }),
-}), getUser);
+}), auth, getUser);
 routes.patch('/users/me', auth, updateProfile);
 routes.patch('/users/me/avatar', auth, updateAvatar);
 
