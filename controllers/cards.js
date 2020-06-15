@@ -1,6 +1,6 @@
 const Card = require('../models/cards');
 const NotFoundError = require('../errors/NotFoundError');
-const AccecDeniedError = require('../errors/AccecDeniedError');
+const AccessDeniedError = require('../errors/AccessDeniedError');
 
 
 module.exports.getCards = async (req, res, next) => {
@@ -18,7 +18,7 @@ module.exports.deleteCard = async (req, res, next) => {
     const userDeleteCard = await Card.findById(cardId).populate('owner')
       .orFail(() => new NotFoundError('Card list is empty'));
     if (!userDeleteCard.owner.equals(req.user._id)) {
-      await Promise.reject(new AccecDeniedError('Access denied'));
+      await Promise.reject(new AccessDeniedError('Access denied'));
     }
     await userDeleteCard.remove();
     return res.send({ userDeleteCard });
