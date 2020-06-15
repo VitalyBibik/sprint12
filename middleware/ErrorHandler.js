@@ -1,4 +1,4 @@
-function ErrorHandler(error, res) {
+function ErrorHandler(error, req, res, next) {
   if (error.name === 'ValidationError') {
     return res.status(400).send({ message: error.message });
   }
@@ -7,8 +7,9 @@ function ErrorHandler(error, res) {
   }
 
   const statusCode = error.statusCode || 500;
-  return res.status(statusCode).send({
+  res.status(statusCode).send({
     message: statusCode === 500 ? 'Произошла ошибка' : error.message,
   });
+  next();
 }
 module.exports = ErrorHandler;
