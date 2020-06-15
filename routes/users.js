@@ -2,9 +2,12 @@ const routes = require('express').Router();
 const { Joi, celebrate } = require('celebrate');
 const auth = require('../middleware/auth');
 
+const validatorLink = require('../validatorLink');
+
 const {
   getUsers, getUser, createUser, updateProfile, updateAvatar, login,
 } = require('../controllers/users');
+
 
 routes.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -12,7 +15,7 @@ routes.post('/signup', celebrate({
     password: Joi.string().required().min(8),
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().uri().required(),
+    avatar: Joi.string().required().custom(validatorLink),
   }),
 }), createUser);
 routes.post('/signin', celebrate({
