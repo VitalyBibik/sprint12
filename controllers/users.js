@@ -1,9 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
-const { PRIVATE_KEY } = require('../config'); // TODO PRIVATE KEY NEED DELETE
 const NotFoundError = require('../errors/NotFoundError');
-
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUsers = async (req, res, next) => {
   try {
@@ -47,8 +46,7 @@ module.exports.login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const userlogin = await User.findUserByCredentials(email, password);
-    const token = jwt.sign({ _id: userlogin._id },
-      PRIVATE_KEY,
+    const token = jwt.sign({ _id: userlogin._id }, JWT_SECRET || 'dev-secret',
       { expiresIn: '7d' });
     res.cookie('jwt', token, {
       maxAge: 3600000 * 24 * 7,
