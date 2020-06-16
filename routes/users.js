@@ -27,7 +27,7 @@ routes.post('/signin', celebrate({
 routes.get('/users', auth, getUsers);
 routes.get('/users/:id', celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24),
+    id: Joi.string().alphanum().length(24),
   }),
 }), auth, getUser);
 routes.patch('/users/me', celebrate({

@@ -21,7 +21,7 @@ module.exports.deleteCard = async (req, res, next) => {
       await Promise.reject(new AccessDeniedError('Access denied'));
     }
     await userDeleteCard.remove();
-    return res.send({ userDeleteCard });
+    return res.send(userDeleteCard);
   } catch (err) {
     return next(err);
   }
