@@ -1,8 +1,7 @@
 const routes = require('express').Router();
 const { Joi, celebrate } = require('celebrate');
+const { validatorURL } = require('../validatorLink');
 const auth = require('../middleware/auth');
-
-const validatorLink = require('../validatorLink');
 
 const {
   getUsers, getUser, createUser, updateProfile, updateAvatar, login,
@@ -15,7 +14,7 @@ routes.post('/signup', celebrate({
     password: Joi.string().required().min(8),
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required().custom(validatorLink),
+    avatar: Joi.string().required().custom(validatorURL),
   }),
 }), createUser);
 routes.post('/signin', celebrate({
@@ -39,7 +38,7 @@ routes.patch('/users/me', celebrate({
 }), auth, updateProfile);
 routes.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().custom(validatorLink)
+    avatar: Joi.string().required().custom(validatorURL),
   }),
 }), auth, updateAvatar);
 

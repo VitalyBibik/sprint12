@@ -1,9 +1,9 @@
 const validator = require('validator');
 
-function validatorLink(link) {
+const validatorURL = (link) => {
   if (!validator.isURL(link)) {
     throw new Error('invalid avatar link');
   }
   return link;
-}
-module.export = validatorLink;
+};
+module.exports = { validatorURL };

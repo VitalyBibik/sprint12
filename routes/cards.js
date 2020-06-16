@@ -1,7 +1,7 @@
 const routes = require('express').Router();
 const { Joi, celebrate } = require('celebrate');
 const auth = require('../middleware/auth');
-const validatorLink = require('../validatorLink');
+const { validatorURL } = require('../validatorLink');
 const {
   getCards, deleteCard, createCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
@@ -10,7 +10,7 @@ routes.get('/cards', auth, getCards);
 routes.post('/cards', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().custom(validatorLink),
+    link: Joi.string().required().custom(validatorURL),
   }),
 }), auth, createCard);
 routes.delete('/cards/:cardId', celebrate({
