@@ -1,14 +1,19 @@
+
 function ErrorHandler(error, req, res, next) {
-  if (error.name === 'ValidationError') {
-    return res.status(400).send({ message: error.message });
+  let { statusCode = 500, message } = error;
+  if ((error.name === 'ValidationError') || (error.joi !== undefined && error.joi.toString().includes('ValidationError'))) {
+    statusCode = 400;
   }
   if (error.name === 'CastError') {
-    return res.status(400).send({ message: 'id is not found' });
+    statusCode = 400;
+    message = 'id is not found';
   }
-
-  const statusCode = error.statusCode || 500;
+  if (error.code === 11000) {
+    statusCode = 409;
+    message = 'This email is already used';
+  }
   res.status(statusCode).send({
-    message: statusCode === 500 ? 'Произошла ошибка' : error.message,
+    message: statusCode === 500 ? 'Произошла ошибка' : message,
   });
   next();
 }
