@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
-
+const NeedAuthError = require('../errors/NeedAuthError');
 const { JWT_KEYS } = require('../config');
 
 module.exports = (req, res, next) => {
   if (!req.cookies.jwt) {
-    return res.status(401).send({ message: 'Access denied, authorization required' });
+    throw new NeedAuthError('Access denied, authorization required');
   }
   const token = req.cookies.jwt;
   let payload;
