@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { JWT_KEYS } = require('../config');
+
 module.exports = (req, res, next) => {
   if (!req.cookies.jwt) {
     return res.status(401).send({ message: 'Access denied, authorization required' });
@@ -8,7 +9,7 @@ module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
   let payload;
   try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
+    payload = jwt.verify(token, JWT_KEYS);
   } catch (error) {
     return next(error);
   }
