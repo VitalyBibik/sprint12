@@ -14,7 +14,7 @@ const { PORT, DATABASE_URL } = require('./config');
 const ErrorHandler = require('./middleware/ErrorHandler');
 
 const NotValidUrl = require('./NotValidUrl');
-const { limiter } = require('./limiter');
+const { limiter } = require('./middleware/limiter');
 
 mongoose.connect(DATABASE_URL, {
   useNewUrlParser: true,
