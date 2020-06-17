@@ -1,6 +1,7 @@
 
 function ErrorHandler(error, req, res, next) {
   let { statusCode = 500, message } = error;
+
   if ((error.name === 'ValidationError') || (error.joi !== undefined && error.joi.toString().includes('ValidationError'))) {
     statusCode = 400;
   }
