@@ -1,6 +1,6 @@
 const routes = require('express').Router();
 const { Joi, celebrate } = require('celebrate');
-const { validatorURL } = require('../validatorLink');
+const { validatorURL } = require('../validation/validatorLink');
 const auth = require('../middleware/auth');
 
 const {

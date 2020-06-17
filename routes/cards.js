@@ -1,7 +1,7 @@
 const routes = require('express').Router();
 const { Joi, celebrate } = require('celebrate');
 const auth = require('../middleware/auth');
-const { validatorURL } = require('../validatorLink');
+const { validatorURL } = require('../validation/validatorLink');
 const {
   getCards, deleteCard, createCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
