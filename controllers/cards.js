@@ -18,7 +18,7 @@ module.exports.deleteCard = async (req, res, next) => {
     const userDeleteCard = await Card.findById(cardId).populate('owner')
       .orFail(() => new NotFoundError('The card was already deleted'));
     if (!userDeleteCard.owner.equals(req.user._id)) {
-      Promise.reject(new AccessDeniedError('Access denied'));
+      await Promise.reject(new AccessDeniedError('Access denied'));
     }
     await userDeleteCard.remove();
     return res.send(userDeleteCard);
