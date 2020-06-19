@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, JWT_KEYS);
   } catch (error) {
-    return next(error);
+    throw new NeedAuthError('Access denied, authorization required');
   }
   req.user = payload;
   return next();
