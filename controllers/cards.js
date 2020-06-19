@@ -1,43 +1,43 @@
 const Card = require('../models/cards');
 const NotFoundError = require('../errors/NotFoundError');
-const AccecDeniedError = require('../errors/AccecDeniedError');
-const FoundError = require('../errors/FoundError');
+const AccessDeniedError = require('../errors/AccessDeniedError');
 
-module.exports.getCards = async (req, res) => {
+
+module.exports.getCards = async (req, res, next) => {
   try {
-    const userGetCards = await Card.find({}).populate('owner')
+    const userGetCards = await Card.find({})
       .orFail(() => new NotFoundError('Card list is empty'));
     return res.send(userGetCards);
   } catch (err) {
-    return FoundError(err, res);
+    return next(err);
   }
 };
-module.exports.deleteCard = async (req, res) => {
+module.exports.deleteCard = async (req, res, next) => {
   const { cardId } = req.params;
   try {
     const userDeleteCard = await Card.findById(cardId).populate('owner')
-      .orFail(() => new NotFoundError('Card list is empty'));
+      .orFail(() => new NotFoundError('The card was already deleted'));
     if (!userDeleteCard.owner.equals(req.user._id)) {
-      await Promise.reject(new AccecDeniedError('Access denied'));
+      Promise.reject(new AccessDeniedError('Access denied'));
     }
     await userDeleteCard.remove();
-    return res.send({ data: userDeleteCard });
+    return res.send(userDeleteCard);
   } catch (err) {
-    return FoundError(err, res);
+    return next(err);
   }
 };
 
-module.exports.createCard = async (req, res) => {
+module.exports.createCard = async (req, res, next) => {
   const { name, link } = req.body;
   try {
     const userCreateCard = await Card.create({ name, link, owner: req.user._id });
     return res.send(userCreateCard);
   } catch (err) {
-    return FoundError(err, res);
+    return next(err);
   }
 };
 
-module.exports.likeCard = async (req, res) => {
+module.exports.likeCard = async (req, res, next) => {
   try {
     const userLikeCard = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -46,12 +46,12 @@ module.exports.likeCard = async (req, res) => {
     ).orFail(() => new NotFoundError('Card list is empty'));
     return res.send(userLikeCard);
   } catch (err) {
-    return FoundError(err, res);
+    return next(err);
   }
 };
 
 
-module.exports.dislikeCard = async (req, res) => {
+module.exports.dislikeCard = async (req, res, next) => {
   try {
     const userDislikeCard = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -60,6 +60,6 @@ module.exports.dislikeCard = async (req, res) => {
     ).orFail(() => new NotFoundError('Card list is empty'));
     return res.send(userDislikeCard);
   } catch (err) {
-    return FoundError(err, res);
+    return next(err);
   }
 };
