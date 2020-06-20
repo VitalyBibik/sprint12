@@ -1,8 +1,8 @@
-class AccecDeniedError extends Error {
+class AccessDeniedError extends Error {
   constructor(message) {
     super(message);
     this.statusCode = 403;
   }
 }
 
-module.exports = AccecDeniedError;
+module.exports = AccessDeniedError;
