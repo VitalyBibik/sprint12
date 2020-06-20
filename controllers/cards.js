@@ -1,86 +1,65 @@
 const Card = require('../models/cards');
+const NotFoundError = require('../errors/NotFoundError');
+const AccessDeniedError = require('../errors/AccessDeniedError');
 
-module.exports.getCards = (req, res) => {
-  Card.find({})
-    .populate('owner')
-    .then((cards) => {
-      if (cards.length === 0) {
-        return res.status(404).send({ message: 'Cards list is empty' });
-      }
-      return res.send({ data: cards });
-    })
-    .catch((err) => res.status(500).send({ message: err.message }));
+
+module.exports.getCards = async (req, res, next) => {
+  try {
+    const userGetCards = await Card.find({})
+      .orFail(() => new NotFoundError('Card list is empty'));
+    return res.send(userGetCards);
+  } catch (err) {
+    return next(err);
+  }
 };
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => {
-      const cardFind = card.find((item) => item.id === req.params.cardId);
-      if (!cardFind) {
-        return res.status(404).send({
-          message: 'Card not found',
-        });
-      }
-      return res.send({ data: cardFind });
-    })
-    .catch((err) => {
-      if (err.name === err.ValidationError) {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === err.CastError) {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+module.exports.deleteCard = async (req, res, next) => {
+  const { cardId } = req.params;
+  try {
+    const userDeleteCard = await Card.findById(cardId).populate('owner')
+      .orFail(() => new NotFoundError('The card was already deleted Or Cardlist is empty'));
+    if (!userDeleteCard.owner.equals(req.user._id)) {
+      throw new AccessDeniedError('Access denied');
+    }
+    await userDeleteCard.remove();
+    return res.send(userDeleteCard);
+  } catch (err) {
+    return next(err);
+  }
 };
-module.exports.createCard = (req, res) => {
+
+module.exports.createCard = async (req, res, next) => {
   const { name, link } = req.body;
-  Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === err.ValidationError) {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === err.CastError) {
-        return res.status(400).send({ message: err.message });
-      } return res.status(500).send({ message: err.message });
-    });
+  try {
+    const userCreateCard = await Card.create({ name, link, owner: req.user._id });
+    return res.send(userCreateCard);
+  } catch (err) {
+    return next(err);
+  }
 };
 
-module.exports.likeCard = (req, res) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
-  )
-    .then((card) => res.send({ card }))
-    .catch((err) => {
-      if (err.name === err.ValidationError) {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === err.CastError) {
-        return res.status(400).send({ message: err.message });
-      } return res.status(500).send({ message: err.message });
-    });
+module.exports.likeCard = async (req, res, next) => {
+  try {
+    const userLikeCard = await Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } },
+      { new: true },
+    ).orFail(() => new NotFoundError('Card list is empty'));
+    return res.send(userLikeCard);
+  } catch (err) {
+    return next(err);
+  }
 };
 
-module.exports.dislikeCard = (req, res) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
-  )
-    .then((card) => {
-        if (card.length === 0) {
-            return res.status(404).send({ message: 'Like is empty' });
-        }
-        return res.send({ data: card });
-    })
-    .catch((err) => {
-      if (err.name === err.ValidationError) {
-        return res.status(400).send({ message: err.message });
-      }
-      if (err.name === err.CastError) {
-        return res.status(400).send({ message: err.message });
-      } return res.status(500).send({ message: err.message });
-    });
+
+module.exports.dislikeCard = async (req, res, next) => {
+  try {
+    const userDislikeCard = await Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $pull: { likes: req.user._id } },
+      { new: true },
+    ).orFail(() => new NotFoundError('Card list is empty'));
+    return res.send(userDislikeCard);
+  } catch (err) {
+    return next(err);
+  }
 };
