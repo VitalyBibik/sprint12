@@ -1,4 +1,4 @@
-# sprint backend
+# Mesto API
 ## Стек технологий: Node.js, express.js
 ## Цель: Создание RestAPI для проекта "Место": 
 ### запрос на GET /users возвращает всех пользователей из базы;
